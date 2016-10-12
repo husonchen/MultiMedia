@@ -319,6 +319,13 @@ class AudioSamples {
         }
 
         /*** Complete this function ***/
+        for(int i = 0 ; i < totalSamples; i++){
+          float currentTime = float(i) / samplingRate;
+          input[i] = input[i] * ((1-wetness)/2 * sin(TWO_PI * tremoloFrequency * currentTime) + (1 - (1-wetness)/2) );
+          if(input2.length > 0){
+              input2[i] = input2[i] * ((1-wetness)/2 * sin(TWO_PI * tremoloFrequency * currentTime) + (1 - (1-wetness)/2) );
+          }
+        }
     }
 
     // Apply echo
