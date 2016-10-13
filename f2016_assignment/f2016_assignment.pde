@@ -133,7 +133,7 @@ int[] postprocesses = {2, 1, 1, 7};   // Which post-Processing you want, see lis
             - This is repeatedly executed many times each second. You don't need to change it.
 ***/
 
-boolean showDebugMessages = false; // Change this to true when you are developing, and false before you submit your assignment
+boolean showDebugMessages = true; // Change this to true when you are developing, and false before you submit your assignment
 
 int samplingRate = 44100; // Number of samples used for 1 second of sound (fixed, don't change)
 float nyquistFrequency = samplingRate / 2.0;
@@ -824,12 +824,13 @@ void generateSoundSequence() {
     }
 
     /*** complete this function ***/
-    soundGenerator.generateSound(1, 1.0, 260, 5.0);
-    AudioSamples samples = soundGenerator.getGeneratedSound();
-    samples.applyPostProcessing(2); // Post-Process the sound (2 = exponential decay)
-    samples.applyPostProcessing(7); // Post-Process the sound (7 = boost)
-    soundSequenceSamples.add(samples, 0.0, 0.0);
-
+    for(int i = 1 ; i <= 19 ; i++){
+      soundGenerator.generateSound(i, 1.0, 260, 3.0);
+      AudioSamples samples = soundGenerator.getGeneratedSound();
+      samples.applyPostProcessing( 2); // Post-Process the sound (2 = exponential decay)
+      samples.applyPostProcessing( 7); // Post-Process the sound (7 = boost)
+      soundSequenceSamples.add(samples, random(0,1), samples.totalSamples * (i-1) / samples.samplingRate);
+    }
     // Save the sound samples to a WAV file
     WAVFileWriter fw = new WAVFileWriter("allsounds.wav");
     fw.Save(soundSequenceSamples.leftChannelSamples, soundSequenceSamples.rightChannelSamples, samplingRate);
@@ -908,7 +909,7 @@ public void generateMusic(File selection) {
             thread.start();
             thread.join();
 
-            int generatingDuration = millis() - generatingStartTime;
+            int generatingDuration = millis() - generatingStartTime; //<>//
             println("Generated the music in " + generatingDuration / 1000.0 + "s");
 
             // After all the notes have been added at the correct starting times
