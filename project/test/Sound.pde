@@ -1,27 +1,19 @@
-//import processing.sound.*;
-//// A Sample object (for a sound)
-//SoundFile song;
+import ddf.minim.*;
+import ddf.minim.analysis.*;
 
-//void setup() {
-//  size(480, 270);
-//  song = new SoundFile(this, "G:\\MultiMedia\\project\\1.mp4");
-//  song.play();
-//}
+public class Sound{
+  Minim minim;
+  AudioPlayer song;
+  FFT fft;
 
-//void draw() {
-//  background(255);
-//  noLoop();
-//}
 
-//boolean playing = true;
-
-//void mousePressed() {
-//  //if (song.isPlaying()) {
-//  if (playing) {
-//    song.stop();
-//    playing = false;
-//  } else {
-//    song.play();
-//    playing = true;
-//  }
-//}
+  public Sound(Minim minim){
+    this.minim = minim;
+  }
+  public void loaddata(String path){
+    // this loads mysong.wav from the data folder
+    song = minim.loadFile(path);
+    song.play();
+    fft = new FFT(song.bufferSize(), song.sampleRate());
+  }
+}
