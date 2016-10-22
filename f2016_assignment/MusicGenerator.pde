@@ -41,6 +41,7 @@ class MusicGenerator implements Runnable {
 
             for(int i = 0; i < trackGenerators.size(); ++i) {
                 threads.get(i).join();
+                
             }
         } catch(Exception e) {
             println(e);

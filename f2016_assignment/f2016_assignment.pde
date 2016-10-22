@@ -858,15 +858,16 @@ void generateSoundSequence() {
 public void generateMusic(File selection) {
     if (selection != null) {
         writingMusic = true; // So other things don't interrupt the process
-
+        
         String filePath = selection.getAbsolutePath();
 
-        int[] sounds = {0, 1, 2};
-        float[] vols = {0, 1, 1};
+        int[] sounds = {1,2,3,4,5,6,7,8};
+        float[] vols = {1, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
         int[][] pps = {
-            {0, 0, 0}, {2, 0, 7}, {2, 9, 7}
+            {0, 10, 5}, {0, 10, 5}, {0, 10, 5} ,{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5}
+            ,{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5},{0, 10, 5}
         };
-        float[] stereoPositions = {0, 0.7, 0.3};
+        float[] stereoPositions = {0, 0.7, 0.3,0.4,0.6,0.2,0.8,0.9,0.1};
 
         int startTime = 0; // Where to begin (in seconds)
         int endTime = 30; // Where to end (in seconds)
@@ -903,20 +904,22 @@ public void generateMusic(File selection) {
                 println("Number of tracks:" + tracks.length);
             }
 
+            endTime = (int)(MIDISequence.getMicrosecondLength() / 1000000) ;
+            musicSamples = new AudioSamples(endTime, samplingRate);
             // Create a new MusicGenerator
             MusicGenerator musicGenerator = new MusicGenerator(MIDISequence.getTracks(), sounds, vols, pps, stereoPositions, startTime, endTime, tickDuration, samplingRate);
             Thread thread = new Thread(musicGenerator);
             thread.start();
             thread.join();
 
-            int generatingDuration = millis() - generatingStartTime; //<>//
+            int generatingDuration = millis() - generatingStartTime;
             println("Generated the music in " + generatingDuration / 1000.0 + "s");
-
+            println("Generated a music duratin:"+ musicSamples.duration);
             // After all the notes have been added at the correct starting times
             if(showDebugMessages) {
                 println(">>>  Applying echo to the music sequence...");
             }
-
+            
             // Add echo to the entire music
             musicSamples.applyPostProcessing(9);
 

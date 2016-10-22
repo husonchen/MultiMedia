@@ -215,11 +215,12 @@ class SoundGenerator implements Runnable {
 
     // This function generate a sound using Karplus-Strong algorithm
     private void generateKarplusStrongSound(float amplitude, float frequency, float duration) {
-      int delay = 800;
+      int delay = 200;
       int samplesToGenerate = int(duration * samplingRate);
-          for(int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; ++i) {
-            soundSamples.leftChannelSamples[i] = amplitude * random(-1,1);
-        }
+          //for(int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; ++i) {
+          //  soundSamples.leftChannelSamples[i] = amplitude * random(-1,1);
+        //}
+        generateSineInTimeDomain(amplitude,frequency,duration);
         for(int i = delay + 1; i < samplesToGenerate && i < soundSamples.totalSamples; ++i) {
             soundSamples.leftChannelSamples[i] = 0.5 * (soundSamples.leftChannelSamples[i - delay] + soundSamples.leftChannelSamples[i - delay - 1]) ;
             soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
@@ -231,6 +232,7 @@ class SoundGenerator implements Runnable {
       int samplesToGenerate = int(duration * samplingRate);
           for(int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; ++i) {
             soundSamples.leftChannelSamples[i] = amplitude * random(-1,1);
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
         }
     }
 
@@ -302,12 +304,12 @@ class SoundGenerator implements Runnable {
 
     // This function generate a sound using Karplus-Strong algorithm
     private void generateKarplusStrongSound2(float amplitude, float frequency, float duration) {
-        int delay = 800;
-        float blendFactor = 0.5f;
+        int delay = 80;
+        float blendFactor = 0.3f;
       int samplesToGenerate = int(duration * samplingRate);
-          for(int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; ++i) {
-            soundSamples.leftChannelSamples[i] = amplitude * random(-1,1);
-        }
+
+                generateSineInTimeDomain(amplitude,frequency,duration);
+
         for(int i = delay + 1; i < samplesToGenerate && i < soundSamples.totalSamples; ++i) {
           float t = random(0,1);
           if(t <= blendFactor){

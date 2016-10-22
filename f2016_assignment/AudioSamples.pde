@@ -102,7 +102,8 @@ class AudioSamples {
             case (7): applyBoost(target, param1, param2); break; // Boost
             case (8): applyTremolo(target, param1, param2); break; // Tremolo
             case (9): applyEcho(target, param1, param2); break; // Echo
-            case(10): break; // You can add your own post processing if you want to
+            case (10): applyFadeOut(target, param1, param2); break; // Linear fade in
+            case(11): break; // You can add your own post processing if you want to
         }
     }
 
@@ -198,7 +199,7 @@ class AudioSamples {
             case(2): input = leftChannelSamples; input2 = rightChannelSamples; break;
         }
 
-        float fadeValue = 2.0;  // fade in duration, in seconds
+        float fadeValue = 0.5;  // fade in duration, in seconds
         if(!Float.isNaN(param1)) {
             fadeValue = param1;
         }
@@ -270,28 +271,29 @@ class AudioSamples {
         
         //find the max and min
         for(int i = 0; i < totalSamples; i ++){
-          if( input[i] > boostOriginalMax){
+          if( input[i] < boostOriginalMax){
             boostOriginalMax = input[i];
           }
-          if( input[i] < boostOriginalMin){
+          if( input[i] > boostOriginalMin){
             boostOriginalMin = input[i];
           }
         }
         //Handle the second channel if needed
         if(input2.length > 0) {
           for(int i = 0; i < totalSamples; i ++){
-            if( input[i] > boostOriginalMax){
-              boostOriginalMax = input[i];
+            if( input2[i] < boostOriginalMax){
+              boostOriginalMax = input2[i];
             }
-            if( input[i] < boostOriginalMin){
-              boostOriginalMin = input[i];
+            if( input2[i] > boostOriginalMin){
+              boostOriginalMin = input2[i];
             }
           }
         }
-        float multier =(boostMin - boostMax) /(boostOriginalMax - boostOriginalMin);
+
+        float multier =(boostMin - boostMax) /(boostOriginalMin - boostOriginalMax);
         for(int i = 0; i < totalSamples ; i ++){
           input[i] = multier * input[i];
-          if(input2.length > 0) {
+          if(input2.length > 0) { //<>//
             input2[i] = multier * input2[i];
           }
         }
@@ -356,5 +358,45 @@ class AudioSamples {
         }
 
         /*** complete this function ***/
+        int delaySamples = (int) (delayLineDuration * samplingRate);
+        for(int i = totalSamples - 1; i > delaySamples ; i--){
+          input[i] = input[i] + delayLineMultiplier * input[i - delaySamples];
+          if(input2.length > 0){
+            input2[i] = input2[i] + delayLineMultiplier * input2[i - delaySamples];
+          }
+        }
+    }
+    
+    // Apply linear fade in
+    private void applyFadeOut(int target, float param1, float param2) {
+
+        // Set up the target(s)
+        float[] input = new float[0];
+        float[] input2 = new float[0];
+        switch(target) {
+            case(0): input = leftChannelSamples; break;
+            case(1): input = rightChannelSamples; break;
+            case(2): input = leftChannelSamples; input2 = rightChannelSamples; break;
+        }
+
+        float fadeValue = 0.5;  // fade in duration, in seconds
+        if(!Float.isNaN(param1)) {
+            fadeValue = param1;
+        }
+
+        /*** Complete this function ***/
+        float total_samples_to_fade = int(fadeValue * samplingRate);
+        if(total_samples_to_fade > totalSamples){
+          total_samples_to_fade = totalSamples;
+        }
+        for( int i = int (totalSamples - total_samples_to_fade); i < totalSamples ; i ++){
+          float fade_multiplier = (float)(total_samples_to_fade - (i - (totalSamples - total_samples_to_fade))) / total_samples_to_fade ;
+          input[i] =  input[i] * fade_multiplier;
+          // Handle the second channel if needed
+          if(input2.length > 0) {
+              input2[i] = input2[i] * fade_multiplier;
+          }
+   
+        }
     }
 }
