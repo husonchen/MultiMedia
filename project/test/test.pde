@@ -1,11 +1,23 @@
 import processing.video.*;
+import java.io.BufferedReader;  
+import java.io.File;  
+import java.io.FileOutputStream;  
+import java.io.FileReader;  
+import java.io.RandomAccessFile;
 
 Movie myMovie;
 Minim minim;
 
 String filePath = "G:\\MultiMedia\\project\\1.mp4";
 String audioPath = "G:\\MultiMedia\\project\\audio.wav";
+String beatPath = "G:\\MultiMedia\\project\\audio.txt";
 Sound sound;
+float sum = 0 ;
+int total = 0;
+long starttime;
+  ffmpeg -i 1.mp4 -vcodec copy -an video.mp4
+float average;
+FileOutputStream o=null;
 
 void setup() {
   size(800, 500);
@@ -15,44 +27,33 @@ void setup() {
   //myMovie.play();
   minim = new Minim(this);
   sound = new Sound(minim);
-  sound.loaddata("audio.wav");
+  sound.loaddata(audioPath,1024);
+  sound.recordkick();
+  frameRate(30);
+  starttime = System.currentTimeMillis();
+  
+  RandomAccessFile mm=null;  
+  boolean flag=false;  
+    
+  try {  
+   o = new FileOutputStream(beatPath); 
+  } catch (Exception e) {  
+   // TODO: handle exception  
+   e.printStackTrace();  
+  }
 }
 
 void draw() {
-  //tint(255, 20);
-  //image(myMovie, 0, 0);
-  //float newSpeed = map(mouseX, 0, width, 0.1, 2);
-  //myMovie.speed(newSpeed);
-  
-  //fill(255);
-  //text(nfc(newSpeed, 2) + "X", 10, 30); 
-  
-  background(0);
-  // first perform a forward fft on one of song's buffers
-  // I'm using the mix buffer
-  //  but you can use any one you like
-  sound.fft.forward(sound.song.mix);
- 
-  stroke(255, 0, 0, 128);
-  // draw the spectrum as a series of vertical lines
-  // I multiple the value of getBand by 4 
-  // so that we can see the lines better
-  for(int i = 0; i < sound.fft.specSize(); i++)
-  {
-    line(i, height, i, height - sound.fft.getBand(i)*4);
-  }
-  
-  stroke(255);
-  // we draw the waveform by connecting neighbor values with a line
-  // we multiply each of the values by 50 
-  // because the values in the buffers are normalized
-  // this means that they have values between -1 and 1. 
-  // If we don't scale them up our waveform 
-  // will look more or less like a straight line.
-  for(int i = 0; i < sound.song.bufferSize() - 1; i++)
-  {
-    line(i, 50 + sound.song.left.get(i)*50, i+1, 50 + sound.song.left.get(i+1)*50);
-    line(i, 150 + sound.song.right.get(i)*50, i+1, 150 + sound.song.right.get(i+1)*50);
+  if ( sound.beat.isKick() ){
+    long now = System.currentTimeMillis();
+    try {  
+      o.write(String.valueOf(now - starttime).getBytes("GBK"));
+      o.write(String.valueOf(' ').getBytes("GBK"));
+      o.flush();
+    }catch (Exception e) {  
+     // TODO: handle exception  
+     e.printStackTrace();  
+    }
   }
 }
 
