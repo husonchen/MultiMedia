@@ -29,7 +29,7 @@ void setup() {
   sound = new Sound(minim);
   sound.loaddata(audioPath,1024);
   sound.recordkick();
-  frameRate(30);
+  frameRate(100);
   starttime = System.currentTimeMillis();
   
   RandomAccessFile mm=null;  

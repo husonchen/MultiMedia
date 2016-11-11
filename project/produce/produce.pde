@@ -22,6 +22,7 @@ String toBeatPath = "G:\\MultiMedia\\project\\beat2.txt";
 int counter = 0;
 int currentBeat = 0;
 float speed = 0;
+AudioPlayer song ;
 
 void setup() {
   size(800, 500);  
@@ -30,7 +31,7 @@ void setup() {
   beatAnalyser = new BeatAnalyser(beatPath,toBeatPath);
   mov = new Movie(this, filePath);
   mov.frameRate(100);
-  AudioPlayer song = minim.loadFile(audioPath);
+  song = minim.loadFile(audioPath);
   song.play();
   mov.loop();
   frameRate(frameRate);
