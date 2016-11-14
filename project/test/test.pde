@@ -15,7 +15,6 @@ Sound sound;
 float sum = 0 ;
 int total = 0;
 long starttime;
-  ffmpeg -i 1.mp4 -vcodec copy -an video.mp4
 float average;
 FileOutputStream o=null;
 
@@ -44,17 +43,19 @@ void setup() {
 }
 
 void draw() {
-  if ( sound.beat.isKick() ){
-    long now = System.currentTimeMillis();
-    try {  
-      o.write(String.valueOf(now - starttime).getBytes("GBK"));
-      o.write(String.valueOf(' ').getBytes("GBK"));
-      o.flush();
-    }catch (Exception e) {  
-     // TODO: handle exception  
-     e.printStackTrace();  
-    }
-  }
+  //sound.beat.detect(sound.song.mix);
+  //if ( sound.beat.isKick() ){
+  //  long now = System.currentTimeMillis();
+  //  try {  
+  //    o.write(String.valueOf(now - starttime).getBytes("GBK"));
+  //    o.write(String.valueOf(' ').getBytes("GBK"));
+  //    o.flush();
+  //    println("beat");
+  //  }catch (Exception e) {  
+  //   // TODO: handle exception  
+  //   e.printStackTrace();  
+  //  }
+  //}
 }
 
 // Called every time a new frame is available to read

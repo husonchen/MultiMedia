@@ -25,8 +25,21 @@ public class Sound{
     beat.setSensitivity(300);  
     kickSize = snareSize = hatSize = 16;
     // make a new beat listener, so that we won't miss any buffers for the analysis
-    bl = new BeatListener(beat, song);  
+    //bl = new BeatListener(beat, song);  
     song.play();
+    //song.skip( 100);
+    //song.play();
+    //for(int i = 0; i <= 10000; i ++){
+    //  song.skip( 10);
+    //  //song.play();
+    //  beat.detect(song.mix);
+    //  if(beat.isKick()) {
+    //    System.out.println("beat");
+    //  }else{
+    //    //System.out.println("no");
+    //  }
+    //}
+    System.out.println(song.position());
   }
   
 }
