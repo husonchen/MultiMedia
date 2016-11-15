@@ -1,23 +1,3 @@
-/*
- *  Copyright (c) 2007 - 2008 by Damien Di Fede <ddf@compartmental.net>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Library General Public License as published
- *   by the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Library General Public License for more details.
- *
- *   You should have received a copy of the GNU Library General Public
- *   License along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-package ddf.minim;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -84,18 +64,6 @@ public class MyMinim
 
   public static final int        LOOP_CONTINUOUSLY  = -1;
 
-  /** The .wav file format. */
-  public static AudioFileFormat.Type  WAV          = AudioFileFormat.Type.WAVE;
-  /** The .aiff file format. */
-  public static AudioFileFormat.Type  AIFF        = AudioFileFormat.Type.AIFF;
-  /** The .aifc file format. */
-  public static AudioFileFormat.Type  AIFC        = AudioFileFormat.Type.AIFC;
-  /** The .au file format. */
-  public static AudioFileFormat.Type  AU          = AudioFileFormat.Type.AU;
-  /** The .snd file format. */
-  public static AudioFileFormat.Type  SND          = AudioFileFormat.Type.SND;
-
-  private static boolean        DEBUG        = false;
 
   private MinimServiceProvider    mimp        = null;
   
@@ -108,6 +76,7 @@ public class MyMinim
   // and unfortunately we have to track stream separately
   private ArrayList<AudioStream>    streams        = new ArrayList<AudioStream>();
 
+  public AudioRecordingStream rec;
   /**
    * Creates an instance of Minim.
    * <p>
@@ -180,64 +149,12 @@ public class MyMinim
    *            the MinimServiceProvider that will be used for returning audio
    *            resources
    */
-  public Minim( MinimServiceProvider implementation )
+  public MyMinim( MinimServiceProvider implementation )
   {
     mimp = implementation;
     mimp.start();
   }
 
-  /** @invisible
-   * 
-   * Used internally to report error messages. These error messages will
-   * appear in the console area of the PDE if you are running a sketch from
-   * the PDE, otherwise they will appear in the Java Console.
-   * 
-   * @param message
-   *            the error message to report
-   */
-  public static void error(String message)
-  {
-    System.out.println( "=== Minim Error ===" );
-    System.out.println( "=== " + message );
-    System.out.println();
-  }
-
-  /** @invisible
-   * 
-   * Displays a debug message, but only if {@link #debugOn()} has been called.
-   * The message will be displayed in the console area of the PDE, if you are
-   * running your sketch from the PDE. Otherwise, it will be displayed in the
-   * Java Console.
-   * 
-   * @param message
-   *            the message to display
-   * @see #debugOn()
-   */
-  public static void debug(String message)
-  {
-    if ( DEBUG )
-    {
-      String[] lines = message.split( "\n" );
-      System.out.println( "=== Minim Debug ===" );
-      for ( int i = 0; i < lines.length; i++ )
-      {
-        System.out.println( "=== " + lines[i] );
-      }
-      System.out.println();
-    }
-  }
-
-  /**
-   * Turns on debug messages.
-   */
-  public void debugOn()
-  {
-    DEBUG = true;
-    if ( mimp != null )
-    {
-      mimp.debugOn();
-    }
-  }
 
   /**
    * Turns off debug messages.
@@ -245,7 +162,6 @@ public class MyMinim
    */
   public void debugOff()
   {
-    DEBUG = false;
     if ( mimp != null )
     {
       mimp.debugOff();
@@ -273,33 +189,9 @@ public class MyMinim
    * It will call close() on all of them for you.
    * 
    */
-  public void stop()
-  {
-    debug( "Stopping Minim..." );
-    
-    // close all sources and release them
-    for( AudioSource s : sources )
-    {
-      // null the parent so the AudioSource doesn't try to call removeSource
-      s.parent = null;
-      s.close();
-    }
-    sources.clear();
-    
-    for( AudioStream s : streams )
-    {
-      s.close();
-    }
-    
-    // stop the implementation
-    mimp.stop();
-  }
   
-  void addSource( AudioSource s )
-  {
-    sources.add( s );
-    s.parent = this;
-  }
+  
+  
   
   void removeSource( AudioSource s )
   {
@@ -341,134 +233,9 @@ public class MyMinim
     }
   }
 
-  /**
-   * Creates an AudioSample using the provided sample data and AudioFormat. 
-   * When a buffer size is not provided, it defaults to 1024. The buffer size 
-   * of a sample controls the size of the left, right, and mix AudioBuffer 
-   * fields of the returned AudioSample.
-   * 
-   * @shortdesc Creates an AudioSample using the provided sample data and AudioFormat.
-   * 
-   * @param sampleData
-   *            float[]: the single channel of sample data
-   * @param format
-   *            the AudioFormat describing the sample data
-   *            
-   * @return an AudioSample that can be triggered to make sound
-   * 
-   * @example Advanced/CreateAudioSample
-   * 
-   * @related AudioSample
-   */
-  public AudioSample createSample(float[] sampleData, AudioFormat format)
-  {
-    return createSample( sampleData, format, 1024 );
-  }
 
-  /**
-   * Creates an AudioSample using the provided sample data and
-   * AudioFormat, with the desired output buffer size.
-   * 
-   * @param sampleData
-   *            float[]: the single channel of sample data
-   * @param format
-   *            the AudioFormat describing the sample data
-   * @param bufferSize
-   *            int: the output buffer size to use,
-   *            which controls the size of the left, right, and mix AudioBuffer
-   *            fields of the returned AudioSample.
-   *            
-   * @return an AudioSample that can be triggered to make sound
-   */
-  public AudioSample createSample( float[] sampleData, AudioFormat format, int bufferSize )
-  {
-    AudioSample sample = mimp.getAudioSample( sampleData, format, bufferSize );
-    addSource( sample );
-    return sample;
-  }
 
-  /**
-   * Creates an AudioSample using the provided left and right channel
-   * sample data with an output buffer size of 1024.
-   * 
-   * @param leftSampleData
-   *            float[]: the left channel of the sample data
-   * @param rightSampleData
-   *            float[]: the right channel of the sample data
-   * @param format
-   *            the AudioFormat describing the sample data
-   *            
-   * @return an AudioSample that can be triggered to make sound            
-   */
-  public AudioSample createSample( float[] leftSampleData, float[] rightSampleData, AudioFormat format )
-  {
-    return createSample( leftSampleData, rightSampleData, format, 1024 );
-  }
 
-  /**
-   * Creates an AudioSample using the provided left and right channel
-   * sample data.
-   * 
-   * @param leftSampleData
-   *            float[]: the left channel of the sample data
-   * @param rightSampleData
-   *            float[]: the right channel of the sample data
-   * @param format
-   *            the AudioFormat describing the sample data
-   * @param bufferSize
-   *            int: the output buffer size to use,
-   *            which controls the size of the left, right, and mix AudioBuffer
-   *            fields of the returned AudioSample.
-   *            
-   * @return an AudioSample that can be triggered to make sound
-   */
-  public AudioSample createSample(float[] leftSampleData, float[] rightSampleData, AudioFormat format, int bufferSize)
-  {
-    AudioSample sample = mimp.getAudioSample( leftSampleData, rightSampleData, format, bufferSize );
-    addSource( sample );
-    return sample;
-  }
-
-  /**
-   * Loads the requested file into an AudioSample.
-   * By default, the buffer size used is 1024.
-   * 
-   * @shortdesc Loads the requested file into an AudioSample.
-   * 
-   * @param filename
-   *            the file or URL that you want to load
-   *            
-   * @return an AudioSample that can be triggered to make sound
-   * 
-   * @example Basics/TriggerASample
-   * 
-   * @see #loadSample(String, int)
-   * @see AudioSample
-   * @related AudioSample
-   */
-  public AudioSample loadSample(String filename)
-  {
-    return loadSample( filename, 1024 );
-  }
-
-  /**
-   * Loads the requested file into an AudioSample.
-   * 
-   * @param filename
-   *            the file or URL that you want to load
-   * @param bufferSize
-   *            int: The sample buffer size you want.
-   *            This controls the size of the left, right, and mix
-   *            AudioBuffer fields of the returned AudioSample.
-   *            
-   * @return an AudioSample that can be triggered to make sound
-   */
-  public AudioSample loadSample(String filename, int bufferSize)
-  {
-    AudioSample sample = mimp.getAudioSample( filename, bufferSize );
-    addSource( sample );
-    return sample;
-  }
 
   /** @invisible 
    * Loads the requested file into an {@link AudioSnippet}
@@ -532,7 +299,7 @@ public class MyMinim
   public AudioPlayer loadFile(String filename, int bufferSize)
   {
     AudioPlayer player       = null;
-    AudioRecordingStream rec   = mimp.getAudioRecordingStream( filename, bufferSize, false );
+    rec   = mimp.getAudioRecordingStream( filename, bufferSize, false );
     if ( rec != null )
     {
       AudioFormat format   = rec.getFormat();
@@ -551,14 +318,6 @@ public class MyMinim
       }
     }
     
-    if ( player != null )
-    {
-      addSource( player );
-    }
-    else
-    {
-      error( "Couldn't load the file " + filename );
-    }
     
     return player;
   }
@@ -723,10 +482,6 @@ public class MyMinim
     {
       return new AudioRecorder( source, rec );
     }
-    else
-    {
-      error( "Couldn't create an AudioRecorder for " + fileName + "." );
-    }
     return null;
   }
 
@@ -834,14 +589,7 @@ public class MyMinim
       }
     }
     
-    if ( input != null )
-    {
-      addSource( input );
-    }
-    else
-    {
-      error( "Minim.getLineIn: attempt failed, could not secure an AudioInput." );
-    }
+    
     
     return input;
   }
@@ -965,11 +713,9 @@ public class MyMinim
     if ( out != null )
     {
       AudioOutput output = new AudioOutput( out );
-      addSource( output );
       return output;
     }
 
-    error( "Minim.getLineOut: attempt failed, could not secure a LineOut." );
     return null;
   }
 }

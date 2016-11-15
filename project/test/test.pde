@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;  
 import java.io.FileReader;  
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 
 Movie myMovie;
-MyMinim minim;
+Minim minim;
 
 String filePath = "G:\\MultiMedia\\project\\1.mp4";
 String audioPath = "G:\\MultiMedia\\project\\audio.wav";
@@ -17,14 +18,15 @@ int total = 0;
 long starttime;
 float average;
 FileOutputStream o=null;
-
+int i = 0;
+float[] temp;
 void setup() {
   size(800, 500);
   myMovie = new Movie(this, filePath );
   Command c = new Command();
   //c.exeCmd("D:\\Program Files\\ffmpeg-3.1.4-win64-static\\bin\\ffmpeg -i "+filePath+" -ab 160k -ac 2 -ar 44100 -vn "+audioPath);
   //myMovie.play();
-  minim = new MyMinim(this);
+  minim = new Minim(this);
   sound = new Sound(minim);
   sound.loaddata(audioPath,1024);
   sound.recordkick();
@@ -56,6 +58,16 @@ void draw() {
   //   e.printStackTrace();  
   //  }
   //}
+  //temp = new float[1024];
+  //System.arraycopy(sound.mix,i*sound.sampleRate * 10,temp,0,1024);
+  //sound.beat.detect(temp);
+  //if ( sound.beat.isKick() ){
+    //println("beat");
+    //println(i);
+    //System.out.println(Arrays.toString(temp));  
+  //}
+  
+  //i++;
 }
 
 // Called every time a new frame is available to read

@@ -3,78 +3,85 @@ import ddf.minim.analysis.*;
 import ddf.minim.javasound.*;
 import ddf.minim.spi.* ;
 
-public class Sound{
-  MyMinim minim;
+public class Sound {
+  Minim minim;
   AudioPlayer song;
   FFT fft;
   BeatDetect beat;
   BeatListener bl;
   String path;
+  float[] mix;
+  AudioSample samples;
+  int sampleRate;
   
   float kickSize, snareSize, hatSize;
 
-  public Sound(MyMinim minim){
+  public Sound(Minim minim){
     this.minim = minim;
   }
   
   public void loaddata(String path,int bufferSize){
     // this loads mysong.wav from the data folder
     this.path = path;
-    song = minim.loadFile(path,bufferSize);
-    fft = new FFT(song.bufferSize(), song.sampleRate());
+    //song = minim.loadFile(path,bufferSize);
+    samples = minim.loadSample(path,bufferSize);
+    sampleRate = samples.getMetaData().sampleFrameCount() / samples.length();
+    //fft = new FFT(song.bufferSize(), song.sampleRate());
   }
   
   public void recordkick(){
-    beat = new BeatDetect(song.bufferSize(), song.sampleRate());
-    beat.setSensitivity(300);  
+   
     kickSize = snareSize = hatSize = 16;
     // make a new beat listener, so that we won't miss any buffers for the analysis
-    bl = new BeatListener(beat, song);  
-    song.play();
-    System.out.println(song.mix);
+    //bl = new BeatListener(beat, song);  
+    //song.play();
+    //System.out.println(song.mix);
     //song.skip( 100);
     //song.play();
     //long totalbits = song.length() * song.sampleRate();
-    int totalFrame = song.getMetaData().sampleFrameCount();
-    song = minim.loadFile(path,totalFrame);
-    System.out.println(song.mix.size());
-    song.play();
-    float[] mix = song.mix.toArray();
-    System.out.println(mix[1000]); //<>//
+    samples = minim.loadSample(path,1024);
+    mix = mixStero(samples.getChannel(1),samples.getChannel(2));
+    System.out.println(mix[11000000]);
+    //for(int z = 0 ; z < mix.length; z++ ){
+    //  if(mix[z] != 0){
+    //    System.out.println(z);
+    //    break;
+    //  }
+    //}
+    System.out.println("a");
+    //samples.trigger();
+    beat = new BeatDetect(samples.bufferSize(), samples.sampleRate());
+    System.out.println(samples.sampleRate());
+    beat.setSensitivity(300);
+    while(true){
+      temp = new float[1024];
+      //System.out.println(sampleRate);
+      System.arraycopy(mix,i * sampleRate * 10,temp,0,1024);
+      beat.detect(temp);
+      //System.out.println(Arrays.toString(temp1));  
+      if ( beat.isKick() ){
+        println("beat");
+      }
+      i ++;
+    } //<>//
   }
   
-  public AudioPlayer loadFile(String filename, int bufferSize)
+  public float[] mixStero(float[] b1, float[] b2)
   {
-    AudioPlayer player       = null;
-    AudioRecordingStream rec   = mimp.getAudioRecordingStream( filename, bufferSize, false );
-    if ( rec != null )
+    float[] samples = new float[b1.length];
+    if ((b1.length != b2.length)
+        || (b1.length != samples.length || b2.length != samples.length))
     {
-      AudioFormat format   = rec.getFormat();
-      AudioOut out     = mimp.getAudioOutput( format.getChannels(),
-                             bufferSize, 
-                             format.getSampleRate(),
-                             format.getSampleSizeInBits() );
-      
-      if ( out != null )
-      {
-        player = new AudioPlayer( rec, out );
-      }
-      else
-      {
-        rec.close();
-      }
-    }
-    
-    if ( player != null )
-    {
-      addSource( player );
+      Minim.error("MAudioBuffer.mix: The two passed buffers must be the same size as this MAudioBuffer.");
     }
     else
     {
-      error( "Couldn't load the file " + filename );
+      for (int i = 0; i < samples.length; i++)
+      {
+        samples[i] = (b1[i] + b2[i]) / 2;
+      }
     }
-    
-    return player;
-  }
   
+  return samples;
+  }
 }
