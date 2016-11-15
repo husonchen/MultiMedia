@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.RandomAccessFile;
 
 Movie myMovie;
-Minim minim;
+MyMinim minim;
 
 String filePath = "G:\\MultiMedia\\project\\1.mp4";
 String audioPath = "G:\\MultiMedia\\project\\audio.wav";
@@ -24,7 +24,7 @@ void setup() {
   Command c = new Command();
   //c.exeCmd("D:\\Program Files\\ffmpeg-3.1.4-win64-static\\bin\\ffmpeg -i "+filePath+" -ab 160k -ac 2 -ar 44100 -vn "+audioPath);
   //myMovie.play();
-  minim = new Minim(this);
+  minim = new MyMinim(this);
   sound = new Sound(minim);
   sound.loaddata(audioPath,1024);
   sound.recordkick();
