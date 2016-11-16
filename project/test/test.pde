@@ -20,9 +20,14 @@ float average;
 FileOutputStream o=null;
 int i = 0;
 float[] temp;
+BeatDetect beat;
+AudioInput  audioIn;
+
 void setup() {
-  size(800, 500);
+  size(800, 500,P3D);
+  smooth();
   myMovie = new Movie(this, filePath );
+  myMovie.play();
   Command c = new Command();
   //c.exeCmd("D:\\Program Files\\ffmpeg-3.1.4-win64-static\\bin\\ffmpeg -i "+filePath+" -ab 160k -ac 2 -ar 44100 -vn "+audioPath);
   //myMovie.play();
@@ -35,7 +40,9 @@ void setup() {
   
   RandomAccessFile mm=null;  
   boolean flag=false;  
-    
+  audioIn = minim.getLineIn(Minim.STEREO, 4096, 44100);
+  beat = new BeatDetect(4096, 44100);
+    beat.setSensitivity(1000); //in milliseconds
   try {  
    o = new FileOutputStream(beatPath); 
   } catch (Exception e) {  
@@ -62,12 +69,36 @@ void draw() {
   //System.arraycopy(sound.mix,i*sound.sampleRate * 10,temp,0,1024);
   //sound.beat.detect(temp);
   //if ( sound.beat.isKick() ){
-    //println("beat");
-    //println(i);
-    //System.out.println(Arrays.toString(temp));  
+  //  println("beat");
+  //  println(i);
+    
   //}
-  
+  //if(i == 0)
+  //  System.out.println(Arrays.toString(temp));  
   //i++;
+  //if(frameCount==1){
+  //  while(true){
+  //      temp = new float[1024];
+  //      //System.out.println(sampleRate);
+  //      System.arraycopy(sound.mix,i * sound.sampleRate * 10,temp,0,1024);
+  //      sound.beat.detect(temp);
+  //      //System.out.println(Arrays.toString(temp1));  
+  //      if ( sound.beat.isKick() ){
+  //        println("beat");
+  //      }
+  //      i ++;
+  //      if(i == 100){
+  //        break;
+  //      }
+  //    }
+  //}
+  beat.detect(audioIn.mix);
+    if(beat.isKick()){
+      //println("beat");
+    }
+    image(myMovie, 0, 0,700,490);
+    fill( random(255), random(255), random(255));
+    ellipse(300, 50, 90, 90);
 }
 
 // Called every time a new frame is available to read

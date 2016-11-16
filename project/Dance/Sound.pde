@@ -17,15 +17,15 @@ public class Sound{
   public void loaddata(String path,int bufferSize){
     // this loads mysong.wav from the data folder
     song = minim.loadFile(path,bufferSize);
-    fft = new FFT(song.bufferSize(), song.sampleRate());
+    //fft = new FFT(song.bufferSize(), song.sampleRate());
   }
   
   public void recordkick(){
     beat = new BeatDetect(song.bufferSize(), song.sampleRate());
-    beat.setSensitivity(300);  
+    beat.setSensitivity(1000);  
     kickSize = snareSize = hatSize = 16;
     // make a new beat listener, so that we won't miss any buffers for the analysis
-    bl = new BeatListener(beat, song);  
+    //bl = new BeatListener(beat, song);  
     song.play();
   }
   
@@ -33,5 +33,10 @@ public class Sound{
     if(song != null){
       song.pause();
     }
+  }
+  
+  public boolean isKick(){
+    beat.detect(song.mix);
+    return beat.isKick();
   }
 }
