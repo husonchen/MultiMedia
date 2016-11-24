@@ -3,3 +3,5 @@
 *.wav
 *.mp3
 *.mid
+project/Dance/application.windows64
+project/Dance/application.windows32
