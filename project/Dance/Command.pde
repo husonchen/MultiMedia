@@ -35,7 +35,8 @@ public class Command {
       if(audioFile.exists()){
         audioFile.delete();
       }
-      String cmdString = "D:\\Progra~1\\ffmpeg-3.1.4-win64-static\\bin\\ffmpeg -i "+filePath+" -ab 160k -ac 2 -ar 44100 -vn "+audioPath;
+      //String cmdString = "D:\\Progra~1\\ffmpeg-3.1.4-win64-static\\bin\\ffmpeg -i "+filePath+" -ab 160k -ac 2 -ar 44100 -vn "+audioPath;
+      String cmdString = libPath + "\\ffmpeg -i "+filePath+" -ab 160k -ac 2 -ar 44100 -vn "+audioPath;
       println(cmdString);
       exeCmd(cmdString);
     }
@@ -45,7 +46,7 @@ public class Command {
       if(videoFile.exists()){
         videoFile.delete();
       }
-      String cmdString = "D:\\Progra~1\\ffmpeg-3.1.4-win64-static\\bin\\ffmpeg -i " + filePath+" -vcodec copy -an "+videoPath;
+      String cmdString = libPath + "\\ffmpeg -i " + filePath+" -vcodec copy -an "+videoPath;
       println(cmdString);
       exeCmd(cmdString);
     }

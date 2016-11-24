@@ -94,11 +94,11 @@ void draw() {
   //}
   beat.detect(audioIn.mix);
     if(beat.isKick()){
-      //println("beat");
+      println("beat");
     }
-    image(myMovie, 0, 0,700,490);
-    fill( random(255), random(255), random(255));
-    ellipse(300, 50, 90, 90);
+    //image(myMovie, 0, 0,700,490);
+    //fill( random(255), random(255), random(255));
+    //ellipse(300, 50, 90, 90);
 }
 
 // Called every time a new frame is available to read

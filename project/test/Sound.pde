@@ -52,7 +52,7 @@ public class Sound {
     //samples.trigger();
     beat = new MyBeatDetect(samples.bufferSize(), samples.sampleRate());
     System.out.println(samples.sampleRate());
-    beat.setSensitivity(10);
+    beat.setSensitivity(1000);
     //while(true){
     //  temp = new float[1024];
     //  //System.out.println(sampleRate);
@@ -70,7 +70,7 @@ public class Sound {
     //BeatGenerator bg = new BeatGenerator(this);
     //Thread thread = new Thread(bg);
     //thread.start();
-    analyzeUsingAudioSample();
+    //analyzeUsingAudioSample();
   }
   
   public float[] mixStero(float[] b1, float[] b2)

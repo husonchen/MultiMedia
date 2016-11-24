@@ -10,11 +10,16 @@ ControlP5 cp5;
 int normal = 0xFFFFFFFF;
 int highlighted = 0xFFFF9900;
 Command command = new Command();
-String videoPath = "G:\\MultiMedia\\project\\video.mp4";
-String audioPath = "G:\\MultiMedia\\project\\audio.wav";
-String beatPath_prex = "G:\\MultiMedia\\project\\video_";
-String toBeatPath_prex = "G:\\MultiMedia\\project\\audio_";
-String micRecordPath = "G:\\MultiMedia\\project\\micrecord.wav";
+//String libPath = "D:\\Progra~1\\ffmpeg-3.1.4-win64-static\\bin";
+//String tmpPath = "G:\\MultiMedia\\project";
+
+String libPath = ".\\lib";
+String tmpPath = ".\\tmp";
+String videoPath = tmpPath + "\\video.mp4";
+String audioPath = tmpPath +"\\audio.wav";
+String beatPath_prex = tmpPath +"\\video_";
+String toBeatPath_prex = tmpPath +"\\audio_";
+String micRecordPath = tmpPath +"\\micrecord.wav";
 int counter = 0;
 int currentBeat = 0;
 float speed = 0;
@@ -43,15 +48,16 @@ int everageSpeed;
 void setup() {
   size(800,500,P2D);
   noStroke();
-smooth();
+//smooth();
   frameRate(frameRate);
-  
+  File tmpDir = new File(tmpPath);
+  tmpDir.mkdir();
   minim = new Minim(this);
   sound = new Sound(minim);
   //playMovie();
   
   cp5 = new ControlP5(this);
-  pro = cp5.addTextlabel("label0").setText("Progress:").setPosition(0, 15).setFont(createFont("Arial", 36)).setVisible(true);
+  pro = cp5.addTextlabel("label0").setText("Progress:").setPosition(10, 15).setFont(createFont("Arial", 36)).setVisible(true);
   // create a new button with name 'buttonA'
   
   cp5.addButton("play")
@@ -126,18 +132,20 @@ smooth();
 }
 
 void draw() {
-  if(progress != 100){
-    pro.setText("Progress: "+ progress);
+  if(progress != 100 && !pro.get().getText().equals("Progress: "+ progress +" %")){
+    background(0);
+    pro.setText("Progress: "+ progress +" % Waiting...").setVisible(true);
+    pro.draw();
   }else{
-    pro.setText("");
+    pro.setVisible(false);
   }
-  background(normal);
+  //background(normal);
   switch (recordKick){
     case RECORDING:
       recordingBeat();
       break;
     case FINISHRECORD:
-      image(mov, 0, 0,700,490);
+      image(mov, 0, 0,700,500);
       break;
     case CONVERTTING:
       recordingBeat();
@@ -147,7 +155,7 @@ void draw() {
       break;
     case NONE:
       if(mov != null)
-        image(mov, 0, 0,700,490);
+        image(mov, 0, 0,700,500);
       break;
     case MICRECORDING:
       recordMic();
@@ -175,6 +183,7 @@ public void generateVideo(File selection) {
   command.sperateMusic(selection.getPath(),audioPath);
   //analyse the video beats
   println("end generate");
+  currentMuiscPath = audioPath;
   currentBeatPath = beatPath_prex + Util.getMD5Checksum(audioPath) + ".txt";
   File videoBeatPath = new File(currentBeatPath);
   if(! videoBeatPath.exists()){
@@ -263,7 +272,7 @@ void recordingBeat(){
         beatAnalyser = new BeatAnalyser(currentBeatPath,currentToBeatPath);
       }
       playMovie(videoPath,currentMuiscPath);
-      pro.setText("Progress: 100");
+      progress = 100;
     }else{
       if ( sound.isKick() ){
         long now = System.currentTimeMillis();
@@ -276,7 +285,7 @@ void recordingBeat(){
           e.printStackTrace();  
         }
       }
-      pro.setText("Progress: "+frameRate * sound.song.length() / 100);
+     progress = sound.song.position() * 100 / sound.song.length() ;
     }
 }
 
@@ -292,7 +301,7 @@ void playSpeedVideo(){
       }else{
         counter --;
       }
-      image(mov, 0, 0,700,490);
+      image(mov, 0, 0,700,500);
    
   mov.speed(speed);
   
@@ -310,7 +319,7 @@ void stopMovie(){
 }
 
 void recordMic(){
-  image(mov, 0, 0,700,490);
+  image(mov, 0, 0,700,500);
   if(micRecord == null){
     micRecord = new MicRecord(minim);
   }
